@@ -1,7 +1,5 @@
-import {RouteHandler } from "./serve.ts"
-export { logger } from "./middleware/logger.ts"
-
-export type Middleware = (next: RouteHandler) => RouteHandler;
+import { RouteHandler } from "./../serve.ts";
+import { Middleware } from "./middleware.ts"
 
 export const GET: Middleware = makeMiddlewareForMethod("GET");
 export const POST: Middleware = makeMiddlewareForMethod("POST");

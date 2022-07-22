@@ -1,10 +1,7 @@
-import { 
-  ConnInfo,
-  stdServe,
-  ServeInit,
-} from "./deps.ts"
+import { ConnInfo, ServeInit, stdServe } from "./deps.ts";
 
-import { logger, Middleware } from "./middleware.ts";
+import { Middleware } from "./middleware/middleware.ts";
+import { logger } from "./middleware/logger.ts";
 
 export type RouteHandler = (
   req: Request,
@@ -16,7 +13,6 @@ export interface Routes {
   [path: string]: RouteHandler;
 }
 export type RouteParams = Record<string, string>;
-
 
 export function serve(
   routes: Routes,
