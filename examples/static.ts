@@ -1,9 +1,13 @@
-import { GET,   serve } from "./../mod.ts";
-import { files } from "../mod.ts"
-
+import { GET, serve } from "./../mod.ts";
+import { file, files } from "../mod.ts";
 
 const routes = {
-  "/assets/:filename+": GET(files(`${Deno.cwd()}/examples/public/`, "filename" )),
+  // Serve a directory of files
+  "/assets/:filename+": GET(
+    files(`${Deno.cwd()}/examples/public/`, "filename"),
+  ),
+  // Serve just one file
+  "/hi": GET(file(`${Deno.cwd()}/examples/public/hello.md`)),
 };
 
-await serve(routes);
+serve(routes);
