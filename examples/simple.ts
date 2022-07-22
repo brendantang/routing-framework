@@ -1,4 +1,4 @@
-import { GET, POST, RouteHandler, serve } from "./../mod.ts";
+import { GET, json, POST, RouteHandler, serve } from "./../mod.ts";
 
 const helloHandler: RouteHandler = (_req, _connInfo, params) => {
   const name = params["name"];
@@ -14,7 +14,7 @@ const routes = {
     req: Request,
   ) {
     const body = await req.text();
-    return new Response(body);
+    return json({ youSaid: body });
   }),
   "/err": () => {
     throw "Intentional error!";
