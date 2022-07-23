@@ -4,7 +4,7 @@ const handlerThatTakesFiveSeconds: RouteHandler = async () => {
   const body = await new Promise<string>((resolve, _reject) => {
     setTimeout(
       () => {
-        resolve("The server should time out before you see this response!");
+        resolve("This response takes 5 seconds to serve!");
       },
       5000,
     );
@@ -15,7 +15,11 @@ const handlerThatTakesFiveSeconds: RouteHandler = async () => {
 };
 
 const routes = {
-  "/should_timeout": timeoutAfter(1000)(handlerThatTakesFiveSeconds),
+  "/should_timeout": timeoutAfter(100)(handlerThatTakesFiveSeconds),
+  "/should_not_timeout": timeoutAfter(10000)(handlerThatTakesFiveSeconds),
+  "/sync_handler": timeoutAfter(10000)(function () {
+    return new Response("Synchronoous handler");
+  }),
 };
 
 serve(routes);

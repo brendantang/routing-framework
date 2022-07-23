@@ -1,6 +1,7 @@
 import { Middleware } from "./middleware.ts";
 import { RouteHandler } from "../serve.ts";
 
+const TimeoutErr = "server took too long to respond";
 export function timeoutAfter(millis: number): Middleware {
   return timeoutWithFallbackAfter(millis, function (req) {
     console.error(
@@ -17,17 +18,28 @@ export function timeoutWithFallbackAfter(
 ): Middleware {
   return function (next: RouteHandler): RouteHandler {
     return async function (req, connInfo, params): Promise<Response> {
-      const resp = await Promise.race(
-        [
-          next(req, connInfo, params),
-          new Promise<Response>((resolve, _reject) => {
-            setTimeout(() => {
-              resolve(fallback(req, connInfo, params));
-            }, millis);
-          }),
-        ],
-      );
-      return resp;
+      const promise = new Promise<Response>((resolve, reject) => {
+        setTimeout(() => {
+          reject(TimeoutErr);
+        }, millis);
+
+        const response = next(req, connInfo, params);
+
+        if (response instanceof Promise) {
+          response.then(resolve);
+        } else {
+          resolve(response);
+        }
+      });
+
+      try {
+        return await promise;
+      } catch (e) {
+        if (e === TimeoutErr) {
+          return fallback(req, connInfo, params);
+        }
+        throw e;
+      }
     };
   };
 }
