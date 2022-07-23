@@ -31,16 +31,12 @@ export function serve(
             },
             routes[route],
           );
-          try {
-            const response = await handlerWithMiddlewares(
-              req,
-              connInfo,
-              params,
-            );
-            return response;
-          } catch (e) {
-            throw e;
-          }
+          const response = await handlerWithMiddlewares(
+            req,
+            connInfo,
+            params,
+          );
+          return response;
         }
       }
 
