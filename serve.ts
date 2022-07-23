@@ -14,48 +14,53 @@ export interface Routes {
 }
 export type RouteParams = Record<string, string>;
 
-export function serve(
+export async function serve(
   routes: Routes,
   middlewares: Middleware[] = [logger],
   options: ServeInit = defaultServeOptions,
-): void {
-  try {
-    serve_(routes, middlewares, options);
-  } catch (e) {
+): Promise<void> {
+  return await serve_(routes, middlewares, options).catch((e) => {
     console.error("I encountered an uncaught error: ", e);
     console.info("Restarting server...");
-    serve_(routes, middlewares, options);
-  }
+    serve(routes, middlewares, options);
+  });
 }
 
 function serve_(
   routes: Routes,
   middlewares: Middleware[],
   options: ServeInit,
-): void {
-  stdServe(async (req: Request, connInfo: ConnInfo): Promise<Response> => {
-    const { pathname } = new URL(req.url);
-    for (const route of Object.keys(routes)) {
-      const pattern = new URLPattern({ pathname: route });
-      if (pattern.test({ pathname })) {
-        const params = pattern.exec({ pathname })?.pathname.groups || {};
-        const handlerWithMiddlewares = middlewares.reduce(
-          function (previous, current) {
-            return (current(previous));
-          },
-          routes[route],
-        );
-        try {
-          const response = await handlerWithMiddlewares(req, connInfo, params);
-          return response;
-        } catch (e) {
-          throw e;
+): Promise<void> {
+  return stdServe(
+    async (req: Request, connInfo: ConnInfo): Promise<Response> => {
+      const { pathname } = new URL(req.url);
+      for (const route of Object.keys(routes)) {
+        const pattern = new URLPattern({ pathname: route });
+        if (pattern.test({ pathname })) {
+          const params = pattern.exec({ pathname })?.pathname.groups || {};
+          const handlerWithMiddlewares = middlewares.reduce(
+            function (previous, current) {
+              return (current(previous));
+            },
+            routes[route],
+          );
+          try {
+            const response = await handlerWithMiddlewares(
+              req,
+              connInfo,
+              params,
+            );
+            return response;
+          } catch (e) {
+            throw e;
+          }
         }
       }
-    }
 
-    throw ("No route pattern matched");
-  }, options);
+      throw ("No route pattern matched");
+    },
+    options,
+  );
 }
 
 export const defaultErrorHandler = (err: unknown) => {
