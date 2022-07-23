@@ -1,7 +1,6 @@
 import { ConnInfo, ServeInit, stdServe } from "./deps.ts";
 
 import { Middleware } from "./middleware/middleware.ts";
-import { logger } from "./middleware/logger.ts";
 
 export type RouteHandler = (
   req: Request,
@@ -14,19 +13,7 @@ export interface Routes {
 }
 export type RouteParams = Record<string, string>;
 
-export async function serve(
-  routes: Routes,
-  middlewares: Middleware[] = [logger],
-  options: ServeInit = defaultServeOptions,
-): Promise<void> {
-  return await serve_(routes, middlewares, options).catch((e) => {
-    console.error("I encountered an uncaught error: ", e);
-    console.info("Restarting server...");
-    serve(routes, middlewares, options);
-  });
-}
-
-function serve_(
+export function serve(
   routes: Routes,
   middlewares: Middleware[],
   options: ServeInit,
