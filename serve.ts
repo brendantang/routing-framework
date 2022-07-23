@@ -45,8 +45,12 @@ function serve_(
           },
           routes[route],
         );
-        const response = await handlerWithMiddlewares(req, connInfo, params);
-        return response;
+        try {
+          const response = await handlerWithMiddlewares(req, connInfo, params);
+          return response;
+        } catch (e) {
+          throw e;
+        }
       }
     }
 
