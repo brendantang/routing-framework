@@ -15,3 +15,7 @@ export {
   POST,
 } from "./middleware/methods.ts";
 export { logger } from "./middleware/logger.ts";
+export {
+  timeoutAfter,
+  timeoutWithFallbackAfter,
+} from "./middleware/responseTimeout.ts";
