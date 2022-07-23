@@ -19,6 +19,20 @@ export function serve(
   middlewares: Middleware[] = [logger],
   options: ServeInit = defaultServeOptions,
 ): void {
+  try {
+    serve_(routes, middlewares, options);
+  } catch (e) {
+    console.error("I encountered an uncaught error: ", e);
+    console.info("Restarting server...");
+    serve_(routes, middlewares, options);
+  }
+}
+
+function serve_(
+  routes: Routes,
+  middlewares: Middleware[],
+  options: ServeInit,
+): void {
   stdServe(async (req: Request, connInfo: ConnInfo): Promise<Response> => {
     const { pathname } = new URL(req.url);
     for (const route of Object.keys(routes)) {
@@ -41,7 +55,7 @@ export function serve(
 }
 
 export const defaultErrorHandler = (err: unknown) => {
-  console.error("An error was thrown while serving a request: ", err);
+  console.error("An error was thrown while routing a request: ", err);
   return new Response("Internal Server Error", { status: 500 });
 };
 
