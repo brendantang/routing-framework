@@ -19,3 +19,4 @@ export {
   timeoutAfter,
   timeoutWithFallbackAfter,
 } from "./middleware/responseTimeout.ts";
+export { basicAuth } from "./middleware/basicAuth.ts";

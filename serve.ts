@@ -1,6 +1,7 @@
 import { ConnInfo, ServeInit, stdServe } from "./deps.ts";
 
 import { Middleware } from "./middleware/middleware.ts";
+import { logger } from "./middleware/logger.ts";
 
 export type RouteHandler = (
   req: Request,
@@ -15,8 +16,8 @@ export type RouteParams = Record<string, string>;
 
 export function serve(
   routes: Routes,
-  middlewares: Middleware[],
-  options: ServeInit,
+  middlewares: Middleware[] = [logger],
+  options: ServeInit = defaultServeOptions,
 ): Promise<void> {
   return stdServe(
     async (req: Request, connInfo: ConnInfo): Promise<Response> => {
