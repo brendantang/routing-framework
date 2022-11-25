@@ -21,6 +21,7 @@ export {
   POST,
 } from "./middleware/methods.ts";
 export { logger } from "./middleware/logger.ts";
+export { type Middleware } from "./middleware/middleware.ts";
 export {
   timeoutAfter,
   timeoutWithFallbackAfter,
