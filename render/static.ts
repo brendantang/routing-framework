@@ -14,7 +14,7 @@ export function filesWithFallback(
   fallback: RouteHandler,
   responseInit?: ResponseInit,
 ): RouteHandler {
-  return async function (req, connInfo, params) {
+  return async function (req, params) {
     // Use the request pathname as filepath
     const filepath = decodeURIComponent(params[paramName]);
 
@@ -25,7 +25,7 @@ export function filesWithFallback(
       file = await Deno.readFile(fullPath);
     } catch {
       // If the file cannot be opened, serve the fallback handler
-      return await fallback(req, connInfo, params);
+      return await fallback(req, params);
     }
 
     // Build and send the response
@@ -45,14 +45,14 @@ export function fileWithFallback(
   fallback: RouteHandler,
   responseInit?: ResponseInit,
 ): RouteHandler {
-  return async function (req, connInfo, params) {
+  return async function (req, params) {
     // Try opening the file
     let file;
     try {
       file = await Deno.readFile(filePath);
     } catch {
       // If the file cannot be opened, serve the fallback handler
-      return await fallback(req, connInfo, params);
+      return await fallback(req, params);
     }
 
     // Build and send the response

@@ -17,13 +17,13 @@ export function timeoutWithFallbackAfter(
   fallback: RouteHandler,
 ): Middleware {
   return function (next: RouteHandler): RouteHandler {
-    return async function (req, connInfo, params): Promise<Response> {
+    return async function (req, params): Promise<Response> {
       const promise = new Promise<Response>((resolve, reject) => {
         setTimeout(() => {
           reject(TimeoutErr);
         }, millis);
 
-        const response = next(req, connInfo, params);
+        const response = next(req, params);
 
         if (response instanceof Promise) {
           response.then(resolve);
@@ -36,7 +36,7 @@ export function timeoutWithFallbackAfter(
         return await promise;
       } catch (e) {
         if (e === TimeoutErr) {
-          return fallback(req, connInfo, params);
+          return fallback(req, params);
         }
         throw e;
       }

@@ -2,7 +2,8 @@ export {
   type ConnInfo,
   serve as stdServe,
   type ServeInit,
-} from "https://deno.land/std@0.149.0/http/server.ts";
+} from "https://deno.land/std@0.166.0/http/server.ts";
+
 export { format as formatTime } from "https://deno.land/std/datetime/mod.ts";
 export {
   cyan,

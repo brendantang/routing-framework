@@ -14,12 +14,12 @@ export function handleMethods(
   handlers: methodHandlers,
 ): Middleware {
   return function (fallback: RouteHandler): RouteHandler {
-    return function (req, connInfo, params) {
-      const matchedHandler = handlers.get(req.method);
+    return function (req, params) {
+      const matchedHandler = handlers.get(req.method as Method);
       if (matchedHandler) {
-        return matchedHandler(req, connInfo, params);
+        return matchedHandler(req, params);
       }
-      return fallback(req, connInfo, params);
+      return fallback(req, params);
     };
   };
 }
@@ -28,9 +28,9 @@ function makeMiddlewareForMethod(
   method: Method,
 ): Middleware {
   return function (next: RouteHandler): RouteHandler {
-    return function (req, connInfo, params) {
+    return function (req, params) {
       if (req.method === method) {
-        return next(req, connInfo, params);
+        return next(req, params);
       }
       return new Response("Method not allowed", { status: 405 });
     };

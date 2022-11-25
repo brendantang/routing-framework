@@ -5,7 +5,6 @@ import { logger } from "./middleware/logger.ts";
 
 export type RouteHandler = (
   req: Request,
-  connInfo: ConnInfo,
   params: RouteParams,
 ) => Response | Promise<Response>;
 
@@ -31,7 +30,6 @@ export function handle(
 ) {
   const handler = async (
     req: Request,
-    connInfo: ConnInfo,
   ): Promise<Response> => {
     const { pathname } = new URL(req.url);
     for (const route of Object.keys(routes)) {
@@ -46,7 +44,6 @@ export function handle(
         );
         const response = await handlerWithMiddlewares(
           req,
-          connInfo,
           params,
         );
         return response;

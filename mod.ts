@@ -6,7 +6,13 @@ export {
   filesWithFallback,
   fileWithFallback,
 } from "./render/static.ts";
-export { type RouteHandler, type RouteParams, serve } from "./serve.ts";
+export {
+  handle,
+  type RouteHandler,
+  type RouteParams,
+  type Routes,
+  serve,
+} from "./serve.ts";
 export {
   DELETE,
   GET,

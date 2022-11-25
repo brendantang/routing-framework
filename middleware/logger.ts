@@ -4,10 +4,9 @@ import { ConnInfo, RouteHandler, RouteParams } from "./../mod.ts";
 export function logger(next: RouteHandler): RouteHandler {
   return async function (
     req: Request,
-    _connInfo: ConnInfo,
     params: RouteParams,
   ): Promise<Response> {
-    const response = await next(req, _connInfo, params);
+    const response = await next(req, params);
     const userAgent = req.headers.get("User-Agent");
     const status: number = response.status;
     const logString = `[${
