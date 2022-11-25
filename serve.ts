@@ -20,31 +20,41 @@ export function serve(
   options: ServeInit = defaultServeOptions,
 ): Promise<void> {
   return stdServe(
-    async (req: Request, connInfo: ConnInfo): Promise<Response> => {
-      const { pathname } = new URL(req.url);
-      for (const route of Object.keys(routes)) {
-        const pattern = new URLPattern({ pathname: route });
-        if (pattern.test({ pathname })) {
-          const params = pattern.exec({ pathname })?.pathname.groups || {};
-          const handlerWithMiddlewares = middlewares.reduce(
-            function (previous, current) {
-              return (current(previous));
-            },
-            routes[route],
-          );
-          const response = await handlerWithMiddlewares(
-            req,
-            connInfo,
-            params,
-          );
-          return response;
-        }
-      }
-
-      throw ("No route pattern matched");
-    },
+    handle(routes, middlewares),
     options,
   );
+}
+
+export function handle(
+  routes: Routes,
+  middlewares: Middleware[] = [logger],
+) {
+  const handler = async (
+    req: Request,
+    connInfo: ConnInfo,
+  ): Promise<Response> => {
+    const { pathname } = new URL(req.url);
+    for (const route of Object.keys(routes)) {
+      const pattern = new URLPattern({ pathname: route });
+      if (pattern.test({ pathname })) {
+        const params = pattern.exec({ pathname })?.pathname.groups || {};
+        const handlerWithMiddlewares = middlewares.reduce(
+          function (previous, current) {
+            return (current(previous));
+          },
+          routes[route],
+        );
+        const response = await handlerWithMiddlewares(
+          req,
+          connInfo,
+          params,
+        );
+        return response;
+      }
+    }
+    throw ("No route pattern matched");
+  };
+  return handler;
 }
 
 export const defaultErrorHandler = (err: unknown) => {
