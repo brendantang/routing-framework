@@ -1,4 +1,5 @@
 import { handle, Middleware, RouteHandler, Routes } from "./mod.ts";
+import { default404Handler } from "./serve.ts";
 import { assertEquals } from "./test_deps.ts";
 
 const assertResponse = async (
@@ -9,7 +10,7 @@ const assertResponse = async (
   status: number,
   body?: string,
 ) => {
-  const handler = handle(routes, middlewares);
+  const handler = handle(routes, middlewares, default404Handler);
 
   const response = await handler(
     new Request(`http://localhost${path}`, { method }),
@@ -40,6 +41,9 @@ Deno.test("serve", async (t) => {
     await t.step("the correct routes", async () => {
       await assertResponse(routes, [], "/hello", "GET", 200, "World");
       await assertResponse(routes, [], "/foo", "GET", 200, "bar");
+    });
+    await t.step("404 not found", async () => {
+      await assertResponse(routes, [], "/nonexistent-route", "GET", 404);
     });
     await t.step("middlewares in the correct order", async () => {
       const unauthorized: Middleware = (_next: RouteHandler) => {

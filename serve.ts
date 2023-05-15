@@ -1,6 +1,6 @@
 import { ServeInit, stdServe } from "./deps.ts";
 
-import { Middleware } from "./middleware/middleware.ts";
+import { applyMiddlewares, Middleware } from "./middleware/middleware.ts";
 import { logger } from "./middleware/logger.ts";
 
 export type RouteHandler = (
@@ -16,10 +16,11 @@ export type RouteParams = Record<string, string | undefined>;
 export function serve(
   routes: Routes,
   middlewares: Middleware[] = [logger],
+  onNotFound: RouteHandler = default404Handler,
   options: ServeInit = defaultServeOptions,
 ): Promise<void> {
   return stdServe(
-    handle(routes, middlewares),
+    handle(routes, middlewares, onNotFound),
     options,
   );
 }
@@ -27,6 +28,7 @@ export function serve(
 export function handle(
   routes: Routes,
   middlewares: Middleware[] = [logger],
+  onNotFound: RouteHandler,
 ) {
   const handler = async (
     req: Request,
@@ -36,10 +38,8 @@ export function handle(
       const pattern = new URLPattern({ pathname: route });
       if (pattern.test({ pathname })) {
         const params = pattern.exec({ pathname })?.pathname.groups || {};
-        const handlerWithMiddlewares = middlewares.reduce(
-          function (handler_, middleware) {
-            return (middleware(handler_));
-          },
+        const handlerWithMiddlewares = applyMiddlewares(
+          middlewares,
           routes[route],
         );
         const response = await handlerWithMiddlewares(
@@ -49,7 +49,7 @@ export function handle(
         return response;
       }
     }
-    throw ("No route pattern matched");
+    return applyMiddlewares(middlewares, onNotFound)(req, {});
   };
   return handler;
 }
@@ -57,6 +57,10 @@ export function handle(
 export const defaultErrorHandler = (err: unknown) => {
   console.error("An error was thrown while routing a request: ", err);
   return new Response("Internal Server Error", { status: 500 });
+};
+
+export const default404Handler: RouteHandler = () => {
+  return new Response("Page not found", { status: 404 });
 };
 
 export const defaultServeOptions = { port: 8000, onError: defaultErrorHandler };
