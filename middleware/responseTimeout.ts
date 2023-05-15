@@ -12,6 +12,7 @@ export function timeoutAfter(millis: number): Middleware {
     return new Response("The server took too long to respond to your request.");
   });
 }
+
 export function timeoutWithFallbackAfter(
   millis: number,
   fallback: RouteHandler,
