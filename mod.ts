@@ -1,11 +1,6 @@
 export type { ConnInfo } from "./deps.ts";
 export { json } from "./render/json.ts";
-export {
-  file,
-  files,
-  filesWithFallback,
-  fileWithFallback,
-} from "./render/static.ts";
+export { file, files } from "./render/static.ts";
 export {
   handle,
   type RouteHandler,

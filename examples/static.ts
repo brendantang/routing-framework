@@ -4,7 +4,7 @@ import { file, files } from "../mod.ts";
 const routes = {
   // Serve a directory of files
   "/assets/:filename+": GET(
-    files(`${Deno.cwd()}/examples/public/`, "filename"),
+    files(`${Deno.cwd()}/examples/public`, "filename"),
   ),
   // Serve just one file
   "/hi": GET(file(`${Deno.cwd()}/examples/public/hello.md`)),

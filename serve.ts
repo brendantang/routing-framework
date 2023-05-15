@@ -6,6 +6,7 @@ import { logger } from "./middleware/logger.ts";
 export type RouteHandler = (
   req: Request,
   params: RouteParams,
+  route: string,
 ) => Response | Promise<Response>;
 
 export interface Routes {
@@ -45,11 +46,12 @@ export function handle(
         const response = await handlerWithMiddlewares(
           req,
           params,
+          route,
         );
         return response;
       }
     }
-    return applyMiddlewares(middlewares, onNotFound)(req, {});
+    return applyMiddlewares(middlewares, onNotFound)(req, {}, "");
   };
   return handler;
 }
