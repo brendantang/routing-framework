@@ -5,7 +5,7 @@ export function files(
   directory: string,
   paramName = "filepath",
 ): RouteHandler {
-  return async function (req, params) {
+  return async function (req, _connInfo, params) {
     // Use the request pathname as filepath
     const filepath = decodeURIComponent(params[paramName] || "");
     return await serveFile(req, directory + "/" + filepath);

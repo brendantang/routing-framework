@@ -14,6 +14,18 @@ const assertResponse = async (
 
   const response = await handler(
     new Request(`http://localhost${path}`, { method }),
+    {
+      localAddr: {
+        transport: "tcp",
+        hostname: "127.0.0.1",
+        port: 8000,
+      },
+      remoteAddr: {
+        transport: "tcp",
+        hostname: "127.0.0.1",
+        port: 63718,
+      },
+    },
   );
   assertEquals(
     status,

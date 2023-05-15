@@ -7,7 +7,7 @@ export function basicAuth(
   unauthorizedHandler: RouteHandler,
 ): Middleware {
   return function (authorizedHandler: RouteHandler): RouteHandler {
-    return function (req, params) {
+    return function (req, connInfo, params) {
       const authHeader = req.headers.get("authorization");
       if (authHeader) {
         const match = authHeader.match(/^Basic\s+(.*)$/);
@@ -16,12 +16,12 @@ export function basicAuth(
 
           const expectedPassword = users[username];
           if (expectedPassword && secureCompare(password, expectedPassword)) {
-            return authorizedHandler(req, params);
+            return authorizedHandler(req, connInfo, params);
           }
         }
       }
 
-      return unauthorizedHandler(req, params);
+      return unauthorizedHandler(req, connInfo, params);
     };
   };
 }
