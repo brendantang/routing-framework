@@ -1,6 +1,6 @@
 import { GET, json, POST, RouteHandler, serve } from "./../mod.ts";
 
-const helloHandler: RouteHandler = (_req, _connInfo, params) => {
+const helloHandler: RouteHandler = (_req, params) => {
   const name = params["name"];
   return new Response("Hello " + name);
 };
