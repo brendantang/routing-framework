@@ -22,14 +22,14 @@ export function filesWithFallback(
     let file;
     try {
       const fullPath = rootPath + filepath;
-      file = await Deno.readFile(fullPath);
+      file = await Deno.open(fullPath, { read: true });
     } catch {
       // If the file cannot be opened, serve the fallback handler
       return await fallback(req, params);
     }
 
     // Build and send the response
-    return new Response(file, responseInit);
+    return new Response(file.readable, responseInit);
   };
 }
 
@@ -49,14 +49,14 @@ export function fileWithFallback(
     // Try opening the file
     let file;
     try {
-      file = await Deno.readFile(filePath);
+      file = await Deno.open(filePath, { read: true });
     } catch {
       // If the file cannot be opened, serve the fallback handler
       return await fallback(req, params);
     }
 
     // Build and send the response
-    return new Response(file, responseInit);
+    return new Response(file.readable, responseInit);
   };
 }
 
