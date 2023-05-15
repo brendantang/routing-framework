@@ -1,4 +1,4 @@
-import { ConnInfo, ServeInit, stdServe } from "./deps.ts";
+import { ServeInit, stdServe } from "./deps.ts";
 
 import { Middleware } from "./middleware/middleware.ts";
 import { logger } from "./middleware/logger.ts";
@@ -11,7 +11,7 @@ export type RouteHandler = (
 export interface Routes {
   [path: string]: RouteHandler;
 }
-export type RouteParams = Record<string, string>;
+export type RouteParams = Record<string, string | undefined>;
 
 export function serve(
   routes: Routes,
@@ -37,8 +37,8 @@ export function handle(
       if (pattern.test({ pathname })) {
         const params = pattern.exec({ pathname })?.pathname.groups || {};
         const handlerWithMiddlewares = middlewares.reduce(
-          function (previous, current) {
-            return (current(previous));
+          function (handler_, middleware) {
+            return (middleware(handler_));
           },
           routes[route],
         );

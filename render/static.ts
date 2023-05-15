@@ -16,7 +16,7 @@ export function filesWithFallback(
 ): RouteHandler {
   return async function (req, params) {
     // Use the request pathname as filepath
-    const filepath = decodeURIComponent(params[paramName]);
+    const filepath = decodeURIComponent(params[paramName] || "");
 
     // Try opening the file
     let file;
